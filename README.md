@@ -223,23 +223,67 @@ Nisu potrebni Git, build alati niti QEMU.
 
 ### Želim da ponovim build
 
-Potrebni su Git repozitorijum i sačuvani filesystem snapshot:
+Potrebni su Git repozitorijum i sačuvani filesystem snapshot.
+
+Snapshot nije deo Git repozitorijuma zato što je veliki. Čuva se zasebno kao GitHub Release asset pod nazivom:
+
+```text
+diya-root-mx25.tar.zst
+```
+
+Posle kloniranja repozitorijuma `root-mx25/` još ne postoji. On se automatski obnavlja pomoću `setup_root.sh`.
 
 ```text
 GitHub repozitorijum
-        +
-root filesystem snapshot
+        |
+        | git clone
+        v
+    diya-linux/
+        |
+        | ./setup_root.sh
+        |       |
+        |       +-- preuzima snapshot
+        |       +-- proverava SHA256
+        |       +-- raspakuje root filesystem
         |
         v
-    build.sh
+    root-mx25/
         |
+        | ./build.sh
         v
     diya.iso
 ```
 
-GitHub sadrži build infrastrukturu.
+Prvo se klonira repozitorijum:
 
-Snapshot `diya-root-mx25.tar.zst` čuva konkretno stanje root filesystema iz kojeg se može obnoviti `root-mx25/`.
+```bash
+git clone git@github.com:mikorist/diya-linux.git
+cd diya-linux
+```
+
+Zatim se pokreće:
+
+```bash
+./setup_root.sh
+```
+
+`setup_root.sh` preuzima `diya-root-mx25.tar.zst` sa GitHub Release-a, proverava njegovu SHA256 kontrolnu sumu i raspakuje snapshot u `root-mx25/`.
+
+Tek kada je `root-mx25/` obnovljen, pokreće se build:
+
+```bash
+./build.sh
+```
+
+`build.sh` ne preuzima snapshot i ne obnavlja `root-mx25/`. Njegov zadatak je da od već pripremljenog filesystema napravi Live ISO.
+
+Za opciono testiranje napravljenog ISO-a:
+
+```bash
+./test_qemu.sh
+```
+
+Na taj način Git repozitorijum ostaje mali i sadrži build infrastrukturu, konfiguraciju, boot fajlove i dokumentaciju, dok se veliki filesystem snapshot čuva odvojeno.
 
 ---
 
