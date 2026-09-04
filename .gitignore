@@ -1,0 +1,12 @@
+/root-mx25/
+/linuxfs.new
+/diya.iso
+/diya.iso.md5
+/diya-root-mx25.tar.zst
+/diya-root-mx25.tar.zst.sha256
+/kernel-work/
+/kernel-check/
+/kernel-backups/
+/linuxfs.backup-*
+/boot-extract/
+iso-work/antiX/linuxfs
