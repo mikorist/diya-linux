@@ -3,6 +3,13 @@ set -euo pipefail
 
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# One build at a time: prevents concurrent mksquashfs/xorriso runs.
+exec 9>"$BASE/.build.lock"
+if ! flock -n 9; then
+    echo "ERROR: drugi ISO build je već pokrenut."
+    exit 1
+fi
+
 ROOT="$BASE/root-mx25"
 ISO_WORK="$BASE/iso-work"
 ANTIX="$ISO_WORK/antiX"
@@ -10,6 +17,8 @@ ANTIX="$ISO_WORK/antiX"
 LINUXFS_NEW="$BASE/linuxfs.new"
 ISO_OUT="$BASE/diya.iso"
 ISO_MD5="$BASE/diya.iso.md5"
+ISO_NEW="$BASE/diya.iso.new"
+ISO_MD5_NEW="$BASE/diya.iso.md5.new"
 VERSION_FILE="$ISO_WORK/version"
 
 # ------------------------------------------------------------
@@ -21,6 +30,7 @@ cleanup() {
     echo "[CLEANUP] Brišem privremene fajlove..."
 
     sudo rm -f "$LINUXFS_NEW"
+    rm -f "$ISO_NEW" "$ISO_MD5_NEW"
 
     echo "[CLEANUP] Gotovo."
 }
@@ -33,11 +43,11 @@ trap cleanup EXIT
 
 echo
 echo "=========================================="
-echo " MX diya ISO BUILD"
+echo " diya Linux ISO BUILD"
 echo "=========================================="
 echo
 
-echo "[1/6] Provera strukture..."
+echo "[1/5] Provera strukture..."
 
 test -d "$ROOT" || {
     echo "ERROR: nema root-mx25:"
@@ -57,6 +67,17 @@ test -d "$ANTIX" || {
     exit 1
 }
 
+INIT_LINK="$(readlink "$ROOT/sbin/init" 2>/dev/null || true)"
+if [[ "$INIT_LINK" != "../lib/systemd/systemd" ]]; then
+    echo "ERROR: diya Linux mora da koristi systemd kao /sbin/init."
+    echo "Trenutni /sbin/init: $INIT_LINK"
+    exit 1
+fi
+if sudo chroot "$ROOT" dpkg-query -W -f='${db:Status-Abbrev}' sysvinit-init-diversity 2>/dev/null | grep -q '^ii'; then
+    echo "ERROR: sysvinit-init-diversity je instaliran. Ukloni SysV init pre build-a."
+    exit 1
+fi
+
 test -f "$ANTIX/vmlinuz" || {
     echo "ERROR: nema antiX/vmlinuz"
     exit 1
@@ -74,7 +95,7 @@ echo
 # Provera da iso-work nema naše privremene fajlove
 # ------------------------------------------------------------
 
-echo "[2/6] Provera iso-work..."
+echo "[2/5] Provera iso-work..."
 
 BAD_FILES=()
 
@@ -104,33 +125,14 @@ fi
 echo "iso-work je čist."
 echo
 
-# ------------------------------------------------------------
-# Backup postojećeg linuxfs
-# ------------------------------------------------------------
-
-echo "[3/6] Backup postojećeg linuxfs..."
-
-if [ -f "$ANTIX/linuxfs" ]; then
-
-    BACKUP="$BASE/linuxfs.backup-$(date +%Y%m%d-%H%M%S)"
-
-    sudo cp -a \
-        "$ANTIX/linuxfs" \
-        "$BACKUP"
-
-    echo "Backup:"
-    echo "  $BACKUP"
-else
-    echo "Nema postojećeg linuxfs, preskačem backup."
-fi
-
-echo
+# Stari linuxfs ostaje netaknut dok se novi ne napravi i proveri.
+# Zamena se obavlja atomskim mv-om, bez dodatne kopije od ~1.7 GB.
 
 # ------------------------------------------------------------
 # Pravljenje novog linuxfs
 # ------------------------------------------------------------
 
-echo "[4/6] Pravim novi linuxfs iz root-mx25..."
+echo "[3/5] Pravim novi linuxfs iz root-mx25..."
 echo
 echo "Izvor:"
 echo "  $ROOT"
@@ -140,6 +142,17 @@ echo "  $LINUXFS_NEW"
 echo
 
 sudo rm -f "$LINUXFS_NEW"
+
+# Do not ship repository indexes, package archives or generated APT caches.
+# APT recreates them only when the Live user runs the first apt update.
+echo "Uklanjam APT liste i cache pre pravljenja ISO-a..."
+sudo find "$ROOT/var/lib/apt/lists" -mindepth 1 -maxdepth 1 -type f ! -name lock -delete
+sudo find "$ROOT/var/lib/apt/lists/partial" -type f -delete 2>/dev/null || true
+sudo find "$ROOT/var/cache/apt" -type f ! -path '*/archives/lock' -delete
+sudo install -d -o _apt -g root -m 0700 \
+    "$ROOT/var/lib/apt/lists/partial" \
+    "$ROOT/var/lib/apt/lists/auxfiles" \
+    "$ROOT/var/cache/apt/archives/partial"
 
 sudo mksquashfs \
     "$ROOT" \
@@ -156,6 +169,10 @@ test -s "$LINUXFS_NEW" || {
     exit 1
 }
 
+# Veličina linuxfs-a se samo beleži; ne postavlja se limit pre izrade ISO-a.
+LINUXFS_SIZE="$(stat -c %s "$LINUXFS_NEW")"
+echo "Veličina linuxfs: $(numfmt --to=iec-i --suffix=B "$LINUXFS_SIZE")"
+
 echo
 echo "SquashFS napravljen:"
 ls -lh "$LINUXFS_NEW"
@@ -166,9 +183,9 @@ echo
 # Zamena linuxfs u ISO stagingu
 # ------------------------------------------------------------
 
-echo "Kopiram novi linuxfs u iso-work..."
+echo "Atomski zamenjujem linuxfs u iso-work..."
 
-sudo cp \
+sudo mv -f \
     "$LINUXFS_NEW" \
     "$ANTIX/linuxfs"
 
@@ -222,7 +239,7 @@ echo
 # MD5 za fajlove unutar antiX
 # ------------------------------------------------------------
 
-echo "[5/6] Osvežavam MD5..."
+echo "[4/5] Osvežavam MD5..."
 
 (
     cd "$ANTIX"
@@ -243,11 +260,10 @@ echo "Pravim ISO:"
 echo "  $ISO_OUT"
 echo
 
-sudo rm -f "$ISO_OUT"
-sudo rm -f "$ISO_MD5"
+rm -f "$ISO_NEW" "$ISO_MD5_NEW"
 
 xorriso -as mkisofs \
-    -o "$ISO_OUT" \
+    -o "$ISO_NEW" \
     -V 'diya-Live' \
     --modification-date=2026053112240500 \
     -isohybrid-mbr "$BASE/mx-isohybrid-mbr.bin" \
@@ -273,9 +289,14 @@ echo
 # MD5 za kompletan ISO
 # ------------------------------------------------------------
 
-echo "[6/6] Pravim MD5 za ISO..."
+echo "[5/5] Pravim MD5 za ISO..."
 
-md5sum "$ISO_OUT" > "$ISO_MD5"
+ISO_MD5_SUM="$(md5sum "$ISO_NEW" | awk '{print $1}')"
+printf '%s  %s\n' "$ISO_MD5_SUM" "$ISO_OUT" > "$ISO_MD5_NEW"
+
+# Replace the previous ISO only after xorriso and checksum both succeed.
+mv -f "$ISO_NEW" "$ISO_OUT"
+mv -f "$ISO_MD5_NEW" "$ISO_MD5"
 
 echo
 echo "ISO MD5:"

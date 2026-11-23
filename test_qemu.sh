@@ -3,6 +3,7 @@ set -euo pipefail
 
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ISO="$BASE/diya.iso"
+QEMU_VGA="${QEMU_VGA:-virtio}"
 
 # ------------------------------------------------------------
 # Provera / instalacija QEMU
@@ -55,6 +56,9 @@ echo
 echo "ISO:"
 echo "  $ISO"
 echo
+echo "QEMU video adapter:"
+echo "  $QEMU_VGA"
+echo
 
 qemu-system-x86_64 \
     -enable-kvm \
@@ -64,6 +68,6 @@ qemu-system-x86_64 \
     -cpu host \
     -drive file="$ISO",media=cdrom,readonly=on \
     -boot d \
-    -vga virtio \
+    -vga "$QEMU_VGA" \
     -display gtk \
     -nic user,model=virtio,hostfwd=tcp:127.0.0.1:2222-:22

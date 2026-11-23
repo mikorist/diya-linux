@@ -6,10 +6,16 @@ BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$BASE/root-mx25"
 ISO_WORK="$BASE/iso-work"
 ANTIX="$ISO_WORK/antiX"
+INITRD_BASE="$ANTIX/initrd-base.gz"
 
 BACKUP_DIR="$BASE/kernel-backups"
 WORKDIR="$BASE/kernel-work"
 CHECK="$BASE/kernel-check"
+
+# Live initrd mora da sadrži KMS module i firmware pre coldplug faze.
+# QEMU virtio-gpu nije zamena za fizičke Intel/AMD/NVIDIA adaptere.
+GPU_MODULES=(amdgpu i915 nouveau radeon xe)
+GPU_FIRMWARE=(amdgpu i915 nvidia radeon xe)
 
 UNPACK="$ROOT/usr/lib/cli-shell-utils/bin/unpack-initrd"
 COPYMOD="$ROOT/usr/lib/cli-shell-utils/bin/copy-initrd-modules"
@@ -72,9 +78,9 @@ test -x "$COPYMOD" || {
     exit 1
 }
 
-test -f "$ANTIX/initrd.gz" || {
-    echo "ERROR: nema:"
-    echo "  $ANTIX/initrd.gz"
+test -f "$INITRD_BASE" || {
+    echo "ERROR: nema osnovnog Live initrd šablona:"
+    echo "  $INITRD_BASE"
     exit 1
 }
 
@@ -186,6 +192,9 @@ echo
 echo "Backup napravljen u:"
 echo "  $BACKUP_DIR"
 echo
+echo "Pripremam radni initrd iz osnovnog šablona..."
+sudo install -o root -g root -m 0644 "$INITRD_BASE" "$ANTIX/initrd.gz"
+
 
 # ------------------------------------------------------------
 # 5. Kernel + initrd
@@ -222,6 +231,17 @@ test -f "$WORKDIR/initrd/init" || {
     exit 1
 }
 
+# Keep only the module tree for the kernel being installed. Older updates
+# otherwise accumulate stale kernel modules inside the Live initrd.
+MODULE_ROOT="$WORKDIR/initrd/lib/modules"
+if [ -d "$MODULE_ROOT" ]; then
+    echo "Uklanjam module starih kernela iz Live initrd-a..."
+    while IFS= read -r -d '' OLD_MODULE_DIR; do
+        echo "  Uklanjam: $(basename "$OLD_MODULE_DIR")"
+        sudo rm -rf -- "$OLD_MODULE_DIR"
+    done < <(sudo find "$MODULE_ROOT" -mindepth 1 -maxdepth 1 -type d ! -name "$KVER" -print0)
+fi
+
 echo
 echo "Live initrd: OK"
 echo
@@ -242,6 +262,35 @@ sudo "$COPYMOD" \
     --verbose
 
 echo
+echo "Dodajem fizičke GPU module:"
+printf '  %s\n' "${GPU_MODULES[@]}"
+printf '%s\n' "${GPU_MODULES[@]}" | sudo "$COPYMOD" \
+    --from="$ROOT" \
+    --kernel="$KVER" \
+    --to="$WORKDIR/initrd" \
+    --count \
+    --verbose \
+    --
+
+echo
+echo "Dodajem firmware za fizičke GPU uređaje:"
+FIRMWARE_SOURCE="$ROOT/lib/firmware"
+FIRMWARE_DEST="$WORKDIR/initrd/lib/firmware"
+sudo mkdir -p "$FIRMWARE_DEST"
+
+for FW in "${GPU_FIRMWARE[@]}"; do
+    if [ ! -d "$FIRMWARE_SOURCE/$FW" ]; then
+        echo "ERROR: nedostaje firmware direktorijum: $FIRMWARE_SOURCE/$FW"
+        exit 1
+    fi
+
+    sudo rm -rf "$FIRMWARE_DEST/$FW"
+    sudo cp -a "$FIRMWARE_SOURCE/$FW" "$FIRMWARE_DEST/"
+    echo "  OK  $FW"
+done
+
+echo "Firmware veličina:"
+sudo du -sh "$FIRMWARE_DEST"
 
 MODULE_COUNT="$(
     sudo find "$WORKDIR/initrd/lib/modules/$KVER" \
@@ -265,7 +314,12 @@ for MOD in \
     overlay.ko.zst \
     squashfs.ko.zst \
     loop.ko.zst \
-    isofs.ko.zst
+    isofs.ko.zst \
+    amdgpu.ko.zst \
+    i915.ko.zst \
+    nouveau.ko.zst \
+    radeon.ko.zst \
+    xe.ko.zst
 do
     FOUND="$(
         sudo find "$WORKDIR/initrd/lib/modules/$KVER" \
@@ -341,7 +395,12 @@ for MOD in \
     overlay.ko.zst \
     squashfs.ko.zst \
     loop.ko.zst \
-    isofs.ko.zst
+    isofs.ko.zst \
+    amdgpu.ko.zst \
+    i915.ko.zst \
+    nouveau.ko.zst \
+    radeon.ko.zst \
+    xe.ko.zst
 do
     sudo find "$CHECK/lib/modules/$KVER" \
         -type f \
@@ -352,6 +411,20 @@ do
             echo "ERROR: validacija nije našla $MOD"
             exit 1
         }
+done
+
+for FW in "${GPU_FIRMWARE[@]}"; do
+    test -d "$CHECK/lib/firmware/$FW" || {
+        echo
+        echo "ERROR: validacija nije našla firmware direktorijum $FW"
+        exit 1
+    }
+
+    sudo find "$CHECK/lib/firmware/$FW" -type f -print -quit | grep -q . || {
+        echo
+        echo "ERROR: firmware direktorijum $FW je prazan"
+        exit 1
+    }
 done
 
 FINAL_COUNT="$(

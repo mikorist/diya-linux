@@ -10,3 +10,13 @@
 /linuxfs.backup-*
 /boot-extract/
 iso-work/antiX/linuxfs
+
+/.setup-root-tmp/
+/backups/
+/.build.lock
+/diya.iso.new
+/diya.iso.md5.new
+iso-work/boot/grub/grubenv
+/iso-work/antiX/initrd.gz
+/iso-work/antiX/vmlinuz
+/iso-work/antiX/*.md5

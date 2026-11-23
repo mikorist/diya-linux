@@ -50,7 +50,7 @@ terminal-box:   "inbox_*.png"
     left  = 40%
     top   = 80%
     width = 50%
-    text  = "Press 'e' to edit entry."
+    text  = "@KEYMAP_SHORT@"
     color = "#fafafa"
     align = "left"
     font  = "DejaVu Sans Regular 14"
@@ -79,8 +79,7 @@ terminal-box:   "inbox_*.png"
     show_text       = true
     text_color      = "#fafafa"
     font            = "DejaVu Sans Regular 14"
-    #text            = "@TIMEOUT_NOTIFICATION_LONG@"
-    text            = "The highlighted entry will start in %d seconds"
+    text            = "@TIMEOUT_NOTIFICATION_LONG@"
     bar_style       = "progress_bar_*.png"
     highlight_style = "progress_highlight_*.png"
 }

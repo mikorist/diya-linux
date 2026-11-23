@@ -1,0 +1,389 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: diya Linux boot menus\n"
+"PO-Revision-Date: 2026-11-23 22:00+0100\n"
+"Last-Translator: diya Linux project\n"
+"Language-Team: Serbian\n"
+"Language: sr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Advanced Options"
+msgstr "Napredne opcije"
+
+msgid "Back to main menu"
+msgstr "Nazad na glavni meni"
+
+msgid "Back to main menu (or press »ESC«)"
+msgstr "Nazad na glavni meni (ili pritisnite ESC)"
+
+msgid "Boot Process Performance Visualization"
+msgstr "Prikaz performansi pri pokretanju"
+
+msgid "Boot Rescue Menus"
+msgstr "Meniji za oporavak sistema"
+
+msgid "Boot options"
+msgstr "Opcije pokretanja"
+
+msgid "Change passwords before booting"
+msgstr "Promeni lozinke pre pokretanja"
+
+msgid "Check LiveUSB and persistence ext2/3/4 file systems"
+msgstr "Proveri LiveUSB i ext2/3/4 sisteme datoteka za trajno čuvanje"
+
+msgid "Check integrity of the live media"
+msgstr "Proveri ispravnost Live medija"
+
+msgid "Console options"
+msgstr "Opcije konzole"
+
+msgid "Copy the compressed file system to RAM"
+msgstr "Kopiraj kompresovani sistem datoteka u RAM"
+
+msgid "Custom"
+msgstr "Prilagođeno"
+
+msgid "Customize Boot (text menus)"
+msgstr "Prilagodi pokretanje (tekstualni meniji)"
+
+msgid "Desktop options"
+msgstr "Opcije radnog okruženja"
+
+msgid "Disable ACPI"
+msgstr "Isključi ACPI"
+
+msgid "Disable GRUB theme"
+msgstr "Isključi GRUB temu"
+
+msgid "Disable Intel graphics invert"
+msgstr "Isključi obrtanje slike na Intel grafici"
+
+msgid "Disable LiveUSB-Storage feature"
+msgstr "Isključi LiveUSB skladište"
+
+msgid "Disable automount via fstab"
+msgstr "Isključi automatsko montiranje preko fstab-a"
+
+msgid "Disable console width"
+msgstr "Isključi podešavanje širine konzole"
+
+msgid "Disable dual video card detection"
+msgstr "Isključi detekciju dve grafičke kartice"
+
+msgid "Disable remastering even if linuxfs.new is found."
+msgstr "Isključi remasterovanje čak i ako se pronađe linuxfs.new."
+
+msgid "Disable swap"
+msgstr "Isključi swap"
+
+msgid "Disable text-splash screen"
+msgstr "Isključi tekstualni splash ekran"
+
+msgid "Don't look for USB-2 devices"
+msgstr "Ne traži USB 2 uređaje"
+
+msgid "Don't save files across reboots"
+msgstr "Ne čuvaj fajlove između pokretanja"
+
+msgid "Don't set repositories based on timezone."
+msgstr "Ne biraj repozitorijume na osnovu vremenske zone."
+
+msgid "EFI Bootloader"
+msgstr "EFI pokretač"
+
+msgid "Enable EFI subsystem for RT-PREEMPT kernels"
+msgstr "Uključi EFI podsistem za RT-PREEMPT kernele"
+
+msgid "Enable GRUB theme"
+msgstr "Uključi GRUB temu"
+
+msgid "Enable LiveUSB-Storage feature"
+msgstr "Uključi LiveUSB skladište"
+
+msgid "Enable automount via fstab"
+msgstr "Uključi automatsko montiranje preko fstab-a"
+
+msgid "Enable dual video card detection"
+msgstr "Uključi detekciju dve grafičke kartice"
+
+msgid "Enable text-splash screen"
+msgstr "Uključi tekstualni splash ekran"
+
+msgid "Failsafe options"
+msgstr "Opcije bezbednog pokretanja"
+
+msgid "Finish booting from a LiveUSB"
+msgstr "Dovrši pokretanje sa LiveUSB-a"
+
+msgid "Finish booting from a LiveUSB or hard drive"
+msgstr "Dovrši pokretanje sa LiveUSB-a ili hard diska"
+
+msgid "Finish booting from a hard drive"
+msgstr "Dovrši pokretanje sa hard diska"
+
+msgid "Frugal Menus"
+msgstr "Frugal meniji"
+
+msgid "Frugal like p_static_root"
+msgstr "Frugal režim: p_static_root"
+
+msgid "Frugal like persist_all"
+msgstr "Frugal režim: persist_all"
+
+msgid "Frugal like persist_home"
+msgstr "Frugal režim: persist_home"
+
+msgid "Frugal like persist_root"
+msgstr "Frugal režim: persist_root"
+
+msgid "Frugal like persist_static"
+msgstr "Frugal režim: persist_static"
+
+msgid "Frugal menu"
+msgstr "Frugal meni"
+
+msgid "Frugal menus"
+msgstr "Frugal meniji"
+
+msgid "GFX menu and GRUB menu"
+msgstr "GFX meni i GRUB meni"
+
+msgid "GRUB Bootloader"
+msgstr "GRUB pokretač"
+
+msgid "GRUB Menus"
+msgstr "GRUB meniji"
+
+msgid "GRUB bootloader"
+msgstr "GRUB pokretač"
+
+msgid "GRUB loader"
+msgstr "GRUB pokretač"
+
+msgid "GRUB menu"
+msgstr "GRUB meni"
+
+msgid "GRUB menus"
+msgstr "GRUB meniji"
+
+msgid "GRUB theme"
+msgstr "GRUB tema"
+
+msgid "GRUB-EFI bootloader"
+msgstr "GRUB-EFI pokretač"
+
+msgid "Hardware clock uses UTC (Linux)"
+msgstr "Hardverski sat koristi UTC vreme (Linux)"
+
+msgid "Hardware clock uses local time (Windows)"
+msgstr "Hardverski sat koristi lokalno vreme (Windows)"
+
+msgid "ISO-Boot Menus"
+msgstr "ISO meniji za pokretanje"
+
+msgid "ISO-Boot menus"
+msgstr "ISO meniji za pokretanje"
+
+msgid "Invert video on some Intel graphics systems"
+msgstr "Obrni prikaz na nekim Intel grafičkim sistemima"
+
+msgid "Kernel"
+msgstr "Kernel"
+
+msgid "Kernel options"
+msgstr "Opcije kernela"
+
+msgid "Keyboard"
+msgstr "Tastatura"
+
+msgid "Language"
+msgstr "Jezik"
+
+msgid "No EFI bootloader found."
+msgstr "EFI pokretač nije pronađen."
+
+msgid "No Frugal menu found."
+msgstr "Frugal meni nije pronađen."
+
+msgid "No GRUB CFG-Menu found."
+msgstr "GRUB CFG meni nije pronađen."
+
+msgid "No GRUB bootloader found."
+msgstr "GRUB pokretač nije pronađen."
+
+msgid "No ISO found."
+msgstr "ISO nije pronađen."
+
+msgid "No Shim-EFI bootloader found."
+msgstr "Shim-EFI pokretač nije pronađen."
+
+msgid "No Windows bootloader found."
+msgstr "Windows pokretač nije pronađen."
+
+msgid "Only Frugal, no persistence"
+msgstr "Samo Frugal režim, bez trajnog čuvanja"
+
+msgid "Only »/home« on persistence device"
+msgstr "Samo „/home“ na uređaju za trajno čuvanje"
+
+msgid "Persistence option"
+msgstr "Opcija trajnog čuvanja podataka"
+
+msgid "Pomoć"
+msgstr "Pomoć"
+
+msgid "Power Off"
+msgstr "Isključi računar"
+
+msgid "Press »Enter« to continue"
+msgstr "Pritisnite Enter za nastavak"
+
+msgid "Press »e« to edit, »ESC« to go back."
+msgstr "Pritisnite „e“ za izmenu, „ESC“ za povratak."
+
+msgid "Pritisnite <Enter> za nastavak"
+msgstr "Pritisnite <Enter> za nastavak"
+
+msgid "Proveri ispravnost Live medija"
+msgstr "Proveri ispravnost Live medija"
+
+msgid "Reboot"
+msgstr "Ponovo pokreni"
+
+msgid "Reboot into BIOS/UEFI Setup"
+msgstr "Ponovo pokreni računar i otvori BIOS/UEFI podešavanja"
+
+msgid "Reset"
+msgstr "Vrati podrazumevana podešavanja"
+
+msgid "Roll back to the previous remastered version."
+msgstr "Vrati prethodnu remasterovanu verziju."
+
+msgid "Save options"
+msgstr "Sačuvaj opcije"
+
+msgid "Save options (LiveUSB only)"
+msgstr "Sačuvaj opcije (samo LiveUSB)"
+
+msgid "Save some files across reboots"
+msgstr "Sačuvaj neke fajlove između pokretanja"
+
+msgid "Secure Boot Restrictions"
+msgstr "Ograničenja Secure Boot-a"
+
+msgid "Shim-EFI bootloader"
+msgstr "Shim-EFI pokretač"
+
+msgid "Show frugal device selection - can be saved"
+msgstr "Prikaži izbor Frugal uređaja, uz mogućnost čuvanja"
+
+msgid "Show frugal device selection - one time, not saved"
+msgstr "Prikaži izbor Frugal uređaja samo jednom, bez čuvanja"
+
+msgid "Show text menus"
+msgstr "Prikaži tekstualne menije"
+
+msgid "Show video card detection menu"
+msgstr "Prikaži meni za detekciju grafičkih kartica"
+
+msgid "Switch to Syslinux"
+msgstr "Prebaci na Syslinux"
+
+msgid "Test memorije"
+msgstr "Test memorije"
+
+msgid "The highlighted entry will start in %d seconds."
+msgstr "Izabrana stavka biće pokrenuta za %d sekundi."
+
+msgid "Timezone"
+msgstr "Vremenska zona"
+
+msgid "UTC or local time is asked"
+msgstr "Izaberi da li hardverski sat koristi UTC ili lokalno vreme"
+
+msgid "Use ↑ and ↓. Hit »ENTER« to select/deselect."
+msgstr "Strelicama ↑ i ↓ izaberite stavku. Pritisnite ENTER da potvrdite ili poništite izbor."
+
+msgid "Windows Bootloader"
+msgstr "Windows pokretač"
+
+msgid "Windows bootloader"
+msgstr "Windows pokretač"
+
+msgid "Windows bootloader on drive"
+msgstr "Windows pokretač na disku"
+
+msgid "disabled"
+msgstr "isključeno"
+
+msgid "enabled"
+msgstr "uključeno"
+
+msgid "enter: boot, `e': options, `c': cmd-line"
+msgstr "Enter: pokreni, 'e': opcije, 'c': komandna linija"
+
+msgid "finished"
+msgstr "završeno"
+
+msgid "found EFI bootloader at"
+msgstr "pronađen EFI pokretač na"
+
+msgid "found Frugal menu at"
+msgstr "pronađen Frugal meni na"
+
+msgid "found GRUB bootloader at"
+msgstr "pronađen GRUB pokretač na"
+
+msgid "found GRUB menu on"
+msgstr "pronađen GRUB meni na"
+
+msgid "found Windows bootloader on"
+msgstr "pronađen Windows pokretač na"
+
+msgid "found Windows bootloader on drive"
+msgstr "pronađen Windows pokretač na disku"
+
+msgid "found iso menu on"
+msgstr "pronađen ISO meni na"
+
+msgid "iso menu"
+msgstr "ISO meni"
+
+msgid "root »/« and »/home« in RAM"
+msgstr "root „/“ i „/home“ u RAM-u"
+
+msgid "root »/« and »/home« separate on persistence device"
+msgstr "root „/“ i „/home“ odvojeno na uređaju za trajno čuvanje"
+
+msgid "root »/« and »/home« together on persistence device"
+msgstr "root „/“ i „/home“ zajedno na uređaju za trajno čuvanje"
+
+msgid "root »/« in RAM, »/home« on persistence device"
+msgstr "root „/“ u RAM-u, „/home“ na uređaju za trajno čuvanje"
+
+msgid "searching for Boot-ISO's"
+msgstr "Tražim ISO fajlove za pokretanje..."
+
+msgid "searching for Frugal grub.entry menus"
+msgstr "Tražim Frugal grub.entry menije..."
+
+msgid "searching for GRUB bootloader"
+msgstr "Tražim GRUB pokretač..."
+
+msgid "searching for GRUB menus"
+msgstr "Tražim GRUB menije..."
+
+msgid "searching for GRUB-EFI bootloader"
+msgstr "Tražim GRUB-EFI pokretač..."
+
+msgid "searching for Shim-EFI bootloader"
+msgstr "Tražim Shim-EFI pokretač..."
+
+msgid "searching for Windows bootloader"
+msgstr "Tražim Windows pokretač..."
+
+msgid "version"
+msgstr "verzija"

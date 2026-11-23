@@ -136,6 +136,16 @@ update_kernel.sh
 
 Skripta pronalazi kernel u `root-mx25/boot/`, proverava odgovarajuće module i priprema kernel i initrd koji će se koristiti u Live sistemu.
 
+Pored modula za skladište i Live filesystem, u initrd se kopiraju i KMS moduli za fizičke grafičke adaptere:
+
+- Intel: `i915` i `xe`
+- AMD: `amdgpu` i `radeon`
+- NVIDIA: `nouveau` (otvoreni drajver)
+
+Uz njih se kopiraju odgovarajući direktorijumi firmware-a iz `root-mx25/lib/firmware/`. Ovo je važno zato što antiX Live initrd radi detekciju i učitavanje grafičkih modula pre prelaska u glavni root filesystem.
+
+XFCE početni profil ne treba da sadrži zapamćen HDMI izlaz, EDID ili rezoluciju sa računara na kome se distro razvija. `customize_root.sh` uklanja takve monitor-specifične profile iz `/etc/skel`, kako bi XFCE otkrio priključeni ekran na ciljnom računaru.
+
 Posebno se proveravaju moduli potrebni za pokretanje Live sistema:
 
 ```text
@@ -159,7 +169,23 @@ test_qemu.sh
 
 QEMU nije deo diya Linux sistema i nije potreban za njegovo normalno korišćenje.
 
-Služi isključivo za testiranje da li se napravljeni ISO pravilno podiže u virtuelnoj mašini.
+Podrazumevani QEMU test koristi VirtIO grafički adapter. On proverava VirtIO putanju, ali ne predstavlja test fizičkih Intel, AMD ili NVIDIA kartica. Za dodatni generički VGA test može se promeniti adapter, na primer:
+
+```bash
+QEMU_VGA=std ./test_qemu.sh
+```
+
+Konačna provera fizičkih grafičkih kartica zahteva pokretanje ISO-a na stvarnom računaru sa odgovarajućim hardverom. NVIDIA podrška u Live sistemu koristi Nouveau i odgovarajući firmware. Vlasnički drajver se ne instalira unapred.
+
+Za instalaciju vlasničkog NVIDIA drajvera koristi se MX alat `ddm-mx`, dostupan kroz MX meni kao **Nvidia driver installer**. Alat prepoznaje PCI ID grafičke kartice, bira odgovarajuću granu drajvera, instalira kernel modul preko DKMS-a i može da vrati sistem na Nouveau komandom `sudo ddm-mx -p nvidia`. Potrebna je internet veza.
+
+DDM-u su potrebni kernel headeri koji se tačno poklapaju sa aktivnim kernelom. Zato se uz MX AHS Liquorix kernel instalira i odgovarajući `linux-headers-liquorix-amd64` metapaket. Stari kernel se uklanja iz build stabla kako bi kernel, moduli i headeri ostali usklađeni.
+
+Podrazumevani cilj je praktična podrška za NVIDIA kartice koje prepoznaje aktuelni MX drajver iz serije 580. DDM sam proverava PCI ID i preporučuje odgovarajuću dostupnu granu. Provera njegove baze za PCI ID-jeve `10DE:1C03`, `10DE:2484` i `10DE:2684` vraća NVIDIA 580 kao preporučeni drajver. To je provera baze podržanih uređaja, ne fizički test tih kartica.
+
+Nisu obećane sve istorijske NVIDIA kartice: za modele van podrške vlasničkog drajvera ostaje Nouveau, ukoliko ga konkretan GPU i njegov firmware podržavaju. DDM za instalaciju drajvera zahteva internet vezu. Uspešna instalacija i učitavanje vlasničkog modula proveravaju se tek na fizičkom računaru.
+
+Proverena je i AMD Radeon RX 570 4 GB (PCI ID `1002:67DF`): kernel je mapira na `amdgpu`, a svih 21 Polaris 10 firmware fajlova koje modul navodi nalaze se i u `root-mx25/` i u Live initrd-u. Ovo je provera sadržaja slike, ne zamena za završni test pokretanja na fizičkoj RX 570 kartici.
 
 Ako QEMU nije instaliran, skripta može da instalira potrebne pakete.
 
@@ -269,13 +295,32 @@ Zatim se pokreće:
 
 `setup_root.sh` preuzima `diya-root-mx25.tar.zst` sa GitHub Release-a, proverava njegovu SHA256 kontrolnu sumu i raspakuje snapshot u `root-mx25/`.
 
-Tek kada je `root-mx25/` obnovljen, pokreće se build:
+Tek kada je `root-mx25/` obnovljen, mogu da se dodaju paketi predviđeni za diya Linux:
 
 ```bash
+./customize_root.sh
+```
+
+Skripta radi isključivo nad `root-mx25/`, ne nad sistemom na kome se build pokreće. Osvežava APT liste u ciljnom filesystemu i instalira:
+
+- `kdeconnect` za povezivanje Android telefona i tableta sa računarom
+- `vlc` za reprodukciju muzike i videa
+- `mpv` kao dodatni lagani plejer
+
+KDE Connect indikator se dodaje u XFCE autostart, tako da se pokreće pri prijavi na desktop. Audio izlaz se ne preusmerava automatski: VLC i MPV koriste izlaz koji je izabran u audio sistemu diya Linux-a.
+
+Skripta osvežava i MX AHS firmware pakete za AMD, Intel i NVIDIA grafiku, kako bi firmware odgovarao kernelu koji se isporučuje u Live sistemu.
+
+Posle prilagođavanja filesystema priprema se Live kernel i initrd, pa se pokreće build:
+
+```bash
+./update_kernel.sh
 ./build.sh
 ```
 
-`build.sh` ne preuzima snapshot i ne obnavlja `root-mx25/`. Njegov zadatak je da od već pripremljenog filesystema napravi Live ISO.
+`update_kernel.sh` kopira kernel i priprema initrd sa modulima i firmware-om za fizičke Intel, AMD i NVIDIA grafičke adaptere. `build.sh` ne preuzima snapshot i ne obnavlja `root-mx25/`. Njegov zadatak je da od već pripremljenog filesystema napravi Live ISO.
+
+Osnovni antiX initrd čuva se u repozitorijumu kao iso-work/antiX/initrd-base.gz. update_kernel.sh od njega pravi radni initrd.gz i kopira odgovarajući kernel iz root-mx25/boot/. Generisani initrd.gz, vmlinuz i njihove MD5 kontrolne sume ostaju lokalni build izlazi i ne šalju se u Git.
 
 Za opciono testiranje napravljenog ISO-a:
 
@@ -381,3 +426,15 @@ GitHub je namenjen procesu.
 Filesystem snapshot čuva konkretno stanje sistema.
 
 A build skripte povezuju sve to u ponovljiv proces.
+### PipeWire i WirePlumber
+
+Audio podešavanja se dodaju kao konfiguracioni fragmenti, umesto kopiranja kompletnih konfiguracionih fajlova stare verzije PipeWire-a. Time se koriste podrazumevane vrednosti aktuelnog paketa, a diya dodaje samo ono što je zaista potrebno.
+
+- Osnovni PipeWire takt: 48 kHz.
+- Dozvoljene PCM frekvencije: 32, 44.1, 48, 88.2, 96, 176.4, 192, 352.8 i 384 kHz.
+- USB ALSA uređajima dozvoljen je multirate rad, kada ga sam uređaj podržava.
+- Resampler koristi kvalitet 10 kada je konverzija neophodna.
+- USB DAC koristi standardni idle timeout od 5 sekundi, čime se izbegava nepotrebno često otvaranje uređaja, a ostavlja mogućnost promene frekvencije između reprodukcija.
+- Provereni Amanero profil ostaje 2 kanala, S32_LE, period 512, 64 perioda i headroom 512.
+
+Podešavanja su u `/etc/skel/.config/pipewire/pipewire.conf.d/20-audio-quality.conf` i `/etc/skel/.config/wireplumber/wireplumber.conf.d/51-audio-policy.conf`. WirePlumber 0.5 koristi nativni `wireplumber.conf` format; stari Lua fragment nije deo nove instalacije.
