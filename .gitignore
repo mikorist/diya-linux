@@ -10,7 +10,6 @@
 /linuxfs.backup-*
 /boot-extract/
 iso-work/antiX/linuxfs
-
 /.setup-root-tmp/
 /backups/
 /.build.lock
@@ -20,3 +19,6 @@ iso-work/boot/grub/grubenv
 /iso-work/antiX/initrd.gz
 /iso-work/antiX/vmlinuz
 /iso-work/antiX/*.md5
+/diya-linux-pre-v2.0.iso
+/diya-linux-v2.0.iso
+/diya-linux-v2.0.iso.sha256

@@ -4,7 +4,7 @@ set -euo pipefail
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 REPO="mikorist/diya-linux"
-RELEASE_TAG="diya_linux"
+RELEASE_TAG="diya_linux_v2.0"
 
 SNAPSHOT="diya-root-mx25.tar.zst"
 CHECKSUM="${SNAPSHOT}.sha256"

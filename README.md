@@ -12,15 +12,17 @@ Ceo projekat je nastao iz praktičnog rada sa stvarnim audio sistemom, a ne iz i
 
 ## ISO preuzimanje
 
-Gotov diya Linux Live ISO dostupan je na Google Drive-u:
+Gotov diya Linux Live ISO dostupan je na GitHub Releases:
 
-[Preuzmi diya Linux ISO](https://drive.google.com/file/d/14fCpKDDwaYW9FMTdBL4Veb6XSttrpHS-/view?usp=share_link)
+[Preuzmi diya Linux v2.0 ISO](https://github.com/mikorist/diya-linux/releases/download/diya_linux_v2.0/diya-linux-v2.0.iso)
 
 Trenutna verzija:
 
-- Datum: 4. septembar 2026.
-- Veličina: približno 1,74 GB
-- MD5: `7cb105456d92eea7a856a002bd948dfa`
+- Verzija: v2.0
+- Datum: 24. novembar 2026.
+- Veličina: 2.064.752.640 bajtova (1,92 GiB)
+- MD5: `eaa55f95ab93f400a87dda7dac91ad94`
+- SHA256: `71a5f27235827f8a1fd0e680d2acc59a176eda85986293814de3f28fb7e4e015`
 
 Ako želite samo da koristite diya Linux, potrebno je samo preuzeti ISO.
 
@@ -95,7 +97,7 @@ Veliki filesystem snapshot nije deo Git repozitorijuma. Čuva se zasebno kao kom
 diya-root-mx25.tar.zst
 ```
 
-Snapshot omogućava da se sačuva konkretno stanje sistema i da se ono kasnije ponovo obnovi.
+Snapshot omogućava da se sačuva konkretno stanje sistema i da se ono kasnije ponovo obnovi. `setup_root.sh` preuzima baš ovaj tag, proverava SHA256 i raspakuje sadržaj u `root-mx25/`.
 
 ---
 
@@ -233,10 +235,10 @@ Postoje dva potpuno različita načina korišćenja ovog projekta.
 Preuzme se gotov ISO:
 
 ```text
-Google Drive
+GitHub Release v2.0
      |
      v
-  diya.iso
+  diya-linux-v2.0.iso
      |
      v
 USB / virtuelna mašina
@@ -251,7 +253,7 @@ Nisu potrebni Git, build alati niti QEMU.
 
 Potrebni su Git repozitorijum i sačuvani filesystem snapshot.
 
-Snapshot nije deo Git repozitorijuma zato što je veliki. Čuva se zasebno kao GitHub Release asset pod nazivom:
+Snapshot nije deo Git repozitorijuma zato što je veliki. Čuva se zasebno kao GitHub Release asset. Za diya Linux v2.0 koristi se release [diya_linux_v2.0](https://github.com/mikorist/diya-linux/releases/tag/diya_linux_v2.0), u kome su snapshot i SHA256 kontrolna suma:
 
 ```text
 diya-root-mx25.tar.zst
@@ -295,13 +297,9 @@ Zatim se pokreće:
 
 `setup_root.sh` preuzima `diya-root-mx25.tar.zst` sa GitHub Release-a, proverava njegovu SHA256 kontrolnu sumu i raspakuje snapshot u `root-mx25/`.
 
-Tek kada je `root-mx25/` obnovljen, mogu da se dodaju paketi predviđeni za diya Linux:
+Snapshot u Release-u već sadrži pripremljen root filesystem diya Linux v2.0. Za ponavljanje iste verzije, posle `./setup_root.sh` ne treba ponovo pokretati prilagođavanje paketa. Dovoljno je pripremiti Live kernel i napraviti ISO.
 
-```bash
-./customize_root.sh
-```
-
-Skripta radi isključivo nad `root-mx25/`, ne nad sistemom na kome se build pokreće. Osvežava APT liste u ciljnom filesystemu i instalira:
+`customize_root.sh` je opciona skripta za slučaj kada se namerno menja postojeći snapshot ili dodaju paketi. Radi isključivo nad `root-mx25/`, ne nad sistemom na kome se build pokreće. Osvežava APT liste u ciljnom filesystemu i instalira:
 
 - `kdeconnect` za povezivanje Android telefona i tableta sa računarom
 - `vlc` za reprodukciju muzike i videa
@@ -311,7 +309,7 @@ KDE Connect indikator se dodaje u XFCE autostart, tako da se pokreće pri prijav
 
 Skripta osvežava i MX AHS firmware pakete za AMD, Intel i NVIDIA grafiku, kako bi firmware odgovarao kernelu koji se isporučuje u Live sistemu.
 
-Posle prilagođavanja filesystema priprema se Live kernel i initrd, pa se pokreće build:
+Za identičan build iz objavljenog v2.0 snapshot-a priprema se Live kernel i initrd, pa se pokreće build:
 
 ```bash
 ./update_kernel.sh
@@ -320,7 +318,7 @@ Posle prilagođavanja filesystema priprema se Live kernel i initrd, pa se pokre�
 
 `update_kernel.sh` kopira kernel i priprema initrd sa modulima i firmware-om za fizičke Intel, AMD i NVIDIA grafičke adaptere. `build.sh` ne preuzima snapshot i ne obnavlja `root-mx25/`. Njegov zadatak je da od već pripremljenog filesystema napravi Live ISO.
 
-Osnovni antiX initrd čuva se u repozitorijumu kao iso-work/antiX/initrd-base.gz. update_kernel.sh od njega pravi radni initrd.gz i kopira odgovarajući kernel iz root-mx25/boot/. Generisani initrd.gz, vmlinuz i njihove MD5 kontrolne sume ostaju lokalni build izlazi i ne šalju se u Git.
+Osnovni antiX initrd čuva se u repozitorijumu kao iso-work/antiX/initrd-base.gz. `update_kernel.sh` od njega pravi radni `initrd.gz` i kopira odgovarajući kernel iz `root-mx25/boot/`. Osnovni `initrd-base.gz` je samo šablon za build i izostavlja se iz gotovog ISO-a. Generisani `initrd.gz`, `vmlinuz` i njihove MD5 kontrolne sume ostaju lokalni build izlazi i ne šalju se u Git.
 
 Za opciono testiranje napravljenog ISO-a:
 
@@ -384,9 +382,9 @@ diya Linux je aktivan projekat.
 
 Trenutni build sistem omogućava da se iz pripremljenog sistema ponovljivo napravi kompletan Live ISO.
 
-Trenutna verzija odgovara ISO-u objavljenom 4. septembra 2026.
+Trenutna verzija je diya Linux v2.0, napravljena 24. novembra 2026.
 
-Gotov ISO se trenutno distribuira preko Google Drive-a.
+Gotov ISO se trenutno distribuira preko GitHub Releases.
 
 GitHub služi za:
 

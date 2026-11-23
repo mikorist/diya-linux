@@ -222,7 +222,7 @@ DAY="$(date '+%-d')"
 TIME="$(date '+%H:%M')"
 YEAR="$(date '+%Y')"
 
-printf 'diya Linux %s %s %s %s\n' \
+printf 'diya Linux v2.0 %s %s %s %s\n' \
     "$MONTH" \
     "$DAY" \
     "$TIME" \
@@ -262,8 +262,10 @@ echo
 
 rm -f "$ISO_NEW" "$ISO_MD5_NEW"
 
+# initrd-base.gz is an update_kernel.sh template, not a Live boot asset.
 xorriso -as mkisofs \
     -o "$ISO_NEW" \
+    -m 'initrd-base.gz' \
     -V 'diya-Live' \
     --modification-date=2026053112240500 \
     -isohybrid-mbr "$BASE/mx-isohybrid-mbr.bin" \
