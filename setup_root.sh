@@ -4,6 +4,7 @@ set -euo pipefail
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 REPO="mikorist/diya-linux"
+RELEASE_TAG="diya_linux"
 
 SNAPSHOT="diya-root-mx25.tar.zst"
 CHECKSUM="${SNAPSHOT}.sha256"
@@ -11,8 +12,8 @@ CHECKSUM="${SNAPSHOT}.sha256"
 ROOT_DIR="$BASE/root-mx25"
 TMP_DIR="$BASE/.setup-root-tmp"
 
-SNAPSHOT_URL="https://github.com/${REPO}/releases/latest/download/${SNAPSHOT}"
-CHECKSUM_URL="https://github.com/${REPO}/releases/latest/download/${CHECKSUM}"
+SNAPSHOT_URL="https://github.com/${REPO}/releases/download/${RELEASE_TAG}/${SNAPSHOT}"
+CHECKSUM_URL="https://github.com/${REPO}/releases/download/${RELEASE_TAG}/${CHECKSUM}"
 
 cleanup() {
     rm -rf "$TMP_DIR"
