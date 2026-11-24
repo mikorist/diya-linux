@@ -22,3 +22,9 @@ iso-work/boot/grub/grubenv
 /diya-linux-pre-v2.0.iso
 /diya-linux-v2.0.iso
 /diya-linux-v2.0.iso.sha256
+
+# Keep release checksum manifests in Git; the large binary payloads stay local.
+!/diya.iso.md5
+!iso-work/antiX/linuxfs.md5
+!iso-work/antiX/vmlinuz.md5
+!iso-work/antiX/initrd.gz.md5

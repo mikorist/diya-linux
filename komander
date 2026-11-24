@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# Start Desktop Commander in the user's graphical session.  The CLI keeps its
+# own authentication state; this wrapper only opens a fresh device-verification
+# URL in the already configured Google Chrome profile when pairing is needed.
+
+readonly USER_HOME="/home/diya"
+readonly REMOTE_BIN="${DESKTOP_COMMANDER_BIN:-/usr/local/bin/desktop-commander}"
+readonly PGREP_BIN="${PGREP_BIN:-$(command -v pgrep)}"
+
+fail() {
+    printf 'GRESKA: %s\n' "$1" >&2
+    exit 1
+}
+
+if [[ "$#" -ne 0 ]]; then
+    printf 'Upotreba: komander\n'
+    exit 2
+fi
+
+if [[ "$(id -un)" != "diya" ]]; then
+    fail "Pokreni komandu kao korisnik diya, bez sudo."
+fi
+
+export HOME="$USER_HOME"
+export PATH="/usr/local/bin:/usr/bin:/bin"
+
+if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
+    fail "Pokreni komander iz terminala u XFCE grafickoj sesiji, da bi mogao da otvori Chrome."
+fi
+
+[[ -x "$REMOTE_BIN" ]] || fail "Desktop Commander nije pronadjen: $REMOTE_BIN"
+command -v stdbuf >/dev/null 2>&1 || fail "Nedostaje stdbuf (coreutils)."
+
+CHROME_BIN="${GOOGLE_CHROME_BIN:-$(command -v google-chrome || command -v google-chrome-stable || true)}"
+[[ -n "$CHROME_BIN" && -x "$CHROME_BIN" ]] || fail "Google Chrome nije pronadjen."
+
+if "$PGREP_BIN" -u "$(id -u)" -f '/usr/local/bin/desktop-commander remote' >/dev/null 2>&1; then
+    printf 'Desktop Commander Remote vec radi. Vrati se u terminal u kome je pokrenut.\n'
+    exit 0
+fi
+
+printf 'Pokrecem Desktop Commander Remote...\n'
+printf 'Ako je potrebna registracija, link ce se automatski otvoriti u Google Chrome-u.\n'
+printf 'Chrome koristi postojeci profil. Ako si tamo prijavljen na Google, ne moras ponovo da se prijavljujes.\n\n'
+printf 'Ostavi ovaj terminal otvoren dok koristis Desktop Commander. Ctrl+C prekida vezu.\n\n'
+
+LAST_URL=""
+stdbuf -oL -eL "$REMOTE_BIN" remote 2>&1 |
+while IFS= read -r line || [[ -n "$line" ]]; do
+    printf '%s\n' "$line"
+
+    # Strip terminal colour codes before searching the CLI output.
+    plain="$(printf '%s' "$line" | sed -E $'s/\\x1B\\[[0-9;]*[[:alpha:]]//g')"
+
+    # Only open Desktop Commander's own device-verification page.
+    if [[ "$plain" =~ (https://mcp\.desktopcommander\.app/device/verify[^[:space:]]*) ]]; then
+        auth_url="${BASH_REMATCH[1]}"
+        auth_url="$(printf '%s' "$auth_url" | sed -E 's/[),.;]+$//')"
+
+        if [[ -n "$auth_url" && "$auth_url" != "$LAST_URL" ]]; then
+            LAST_URL="$auth_url"
+            printf '\nOtvaram stranicu za registraciju u Google Chrome-u...\n\n'
+            "$CHROME_BIN" --new-tab "$auth_url" \
+                </dev/null >/dev/null 2>&1 &
+        fi
+    fi
+done

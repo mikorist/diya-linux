@@ -163,6 +163,20 @@ Prethodne verzije se čuvaju kao backup kako bi bilo moguće vratiti prethodno s
 
 ---
 
+## Desktop Commander Remote
+
+Desktop Commander Remote pokrece se iz XFCE terminala jednom komandom:
+
+```bash
+komander
+```
+
+Ako je potrebna registracija uredjaja, komanda prikazuje jednokratni kod u terminalu i automatski otvara stranicu za potvrdu u Google Chrome-u. Kod se unosi na toj stranici, a koristi se postojeci Chrome profil i njegova prijava na Google. Desktop Commander sam cuva svoju autentifikacionu sesiju; rucni backup i restore sesije nisu potrebni. Terminal ostaje otvoren dok Remote veza radi.
+
+Komanda se ne pokrece kao systemd servis, jer mora da radi u grafickoj sesiji korisnika kako bi mogla da otvori Chrome.
+
+---
+
 ## Testiranje u QEMU
 
 Za proveru napravljenog ISO-a postoji:

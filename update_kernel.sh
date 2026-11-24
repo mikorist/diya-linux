@@ -217,6 +217,10 @@ echo
 
 sudo rm -rf "$WORKDIR"
 sudo mkdir -p "$WORKDIR"
+# The unpacker runs as root and may create the work tree with mode 0700.
+# Later validation checks run as the invoking user, so make the work root
+# traversable before testing files beneath it.
+sudo chmod 0755 "$WORKDIR"
 
 echo "Raspakujem postojeći Live initrd..."
 
@@ -224,6 +228,7 @@ sudo "$UNPACK" \
     --clear \
     --from="$ANTIX/initrd.gz" \
     --dir="$WORKDIR/initrd"
+sudo chmod 0755 "$WORKDIR/initrd"
 
 test -f "$WORKDIR/initrd/init" || {
     echo
@@ -384,6 +389,7 @@ sudo "$UNPACK" \
     --clear \
     --from="$ANTIX/initrd.gz" \
     --dir="$CHECK"
+sudo chmod 0755 "$CHECK" "$CHECK/lib" "$CHECK/lib/firmware"
 
 test -f "$CHECK/init" || {
     echo

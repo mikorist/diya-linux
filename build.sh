@@ -20,6 +20,7 @@ ISO_MD5="$BASE/diya.iso.md5"
 ISO_NEW="$BASE/diya.iso.new"
 ISO_MD5_NEW="$BASE/diya.iso.md5.new"
 VERSION_FILE="$ISO_WORK/version"
+CHECKSUM_TMP=""
 
 # ------------------------------------------------------------
 # Cleanup na izlazu
@@ -31,6 +32,7 @@ cleanup() {
 
     sudo rm -f "$LINUXFS_NEW"
     rm -f "$ISO_NEW" "$ISO_MD5_NEW"
+    [ -z "$CHECKSUM_TMP" ] || rm -f "$CHECKSUM_TMP"
 
     echo "[CLEANUP] Gotovo."
 }
@@ -241,13 +243,19 @@ echo
 
 echo "[4/5] Osvežavam MD5..."
 
-(
-    cd "$ANTIX"
+# Stage each checksum in a new user-owned file, then atomically replace
+# the destination. This also works when old staging files are root-owned.
+write_antix_md5() {
+    local filename="$1"
+    CHECKSUM_TMP="$(mktemp "$ANTIX/.${filename}.md5.XXXXXX")"
+    (cd "$ANTIX" && md5sum "$filename") > "$CHECKSUM_TMP"
+    mv -f "$CHECKSUM_TMP" "$ANTIX/$filename.md5"
+    CHECKSUM_TMP=""
+}
 
-    md5sum linuxfs > linuxfs.md5
-    md5sum vmlinuz > vmlinuz.md5
-    md5sum initrd.gz > initrd.gz.md5
-)
+write_antix_md5 linuxfs
+write_antix_md5 vmlinuz
+write_antix_md5 initrd.gz
 
 echo "MD5 OK."
 echo
@@ -294,7 +302,7 @@ echo
 echo "[5/5] Pravim MD5 za ISO..."
 
 ISO_MD5_SUM="$(md5sum "$ISO_NEW" | awk '{print $1}')"
-printf '%s  %s\n' "$ISO_MD5_SUM" "$ISO_OUT" > "$ISO_MD5_NEW"
+printf '%s  %s\n' "$ISO_MD5_SUM" "$(basename "$ISO_OUT")" > "$ISO_MD5_NEW"
 
 # Replace the previous ISO only after xorriso and checksum both succeed.
 mv -f "$ISO_NEW" "$ISO_OUT"
