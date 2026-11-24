@@ -22,8 +22,8 @@ Trenutna verzija:
 
 - Verzija: v2.0
 - Datum: 24. novembar 2026.
-- Veličina: 2.064.750.592 bajtova (1,92 GiB)
-- MD5: `f604f335e5f175ca256e9872fcf56db2`
+- Veličina: 2.039.099.392 bajtova (1,90 GiB)
+- MD5: `f69ac84abe66c4f792c9a74829db869b`
 
 
 Ako želite samo da koristite diya Linux, potrebno je samo preuzeti ISO.
