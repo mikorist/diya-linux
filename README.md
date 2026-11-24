@@ -321,6 +321,7 @@ Snapshot u Release-u već sadrži pripremljen root filesystem diya Linux v2.0. Z
 - `kdeconnect` za povezivanje Android telefona i tableta sa računarom
 - `vlc` za reprodukciju muzike i videa
 - `mpv` kao dodatni lagani plejer
+- `audacity` za snimanje i obradu audio materijala
 
 KDE Connect indikator se dodaje u XFCE autostart, tako da se pokreće pri prijavi na desktop. Audio izlaz se ne preusmerava automatski: VLC i MPV koriste izlaz koji je izabran u audio sistemu diya Linux-a.
 
@@ -335,7 +336,7 @@ Za identičan build iz objavljenog v2.0 snapshot-a priprema se Live kernel i ini
 
 `update_kernel.sh` kopira kernel i priprema initrd sa modulima i firmware-om za fizičke Intel, AMD i NVIDIA grafičke adaptere. `build.sh` ne preuzima snapshot i ne obnavlja `root-mx25/`. Njegov zadatak je da od već pripremljenog filesystema napravi Live ISO.
 
-Osnovni antiX initrd čuva se u repozitorijumu kao iso-work/antiX/initrd-base.gz. `update_kernel.sh` od njega pravi radni `initrd.gz` i kopira odgovarajući kernel iz `root-mx25/boot/`. Osnovni `initrd-base.gz` je samo šablon za build i izostavlja se iz gotovog ISO-a. Generisani `initrd.gz`, `vmlinuz` i njihove MD5 kontrolne sume ostaju lokalni build izlazi i ne šalju se u Git.
+Osnovni antiX initrd čuva se u repozitorijumu kao iso-work/antiX/initrd-base.gz. `update_kernel.sh` od njega pravi radni `initrd.gz` i kopira odgovarajući kernel iz `root-mx25/boot/`. Osnovni `initrd-base.gz` je samo šablon za build i izostavlja se iz gotovog ISO-a. Veliki binarni build izlazi `linuxfs`, `vmlinuz`, `initrd.gz` i `diya.iso` ostaju van Git repozitorijuma. U Git se šalju samo njihove MD5 kontrolne sume (`linuxfs.md5`, `vmlinuz.md5`, `initrd.gz.md5` i `diya.iso.md5`) radi provere konkretnog builda.
 
 Za opciono testiranje napravljenog ISO-a:
 
