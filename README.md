@@ -12,17 +12,19 @@ Ceo projekat je nastao iz praktičnog rada sa stvarnim audio sistemom, a ne iz i
 
 ## ISO preuzimanje
 
-Gotov diya Linux Live ISO dostupan je na GitHub Releases:
+Gotov diya Linux Live ISO distribuira se preko Google Drive-a.
 
-[Preuzmi diya Linux v2.0 ISO](https://github.com/mikorist/diya-linux/releases/download/diya_linux_v2.0/diya-linux-v2.0.iso)
+[Preuzmi diya.iso](https://drive.google.com/file/d/14fCpKDDwaYW9FMTdBL4Veb6XSttrpHS-/view?usp=share_link)
+
+Od 2023. godine koristi se jedan isti Google Drive fajl. Novo izdanje postavlja se kao nova verzija tog fajla, tako da link za preuzimanje ostaje nepromenjen.
 
 Trenutna verzija:
 
 - Verzija: v2.0
 - Datum: 24. novembar 2026.
-- Veličina: 2.064.752.640 bajtova (1,92 GiB)
-- MD5: `eaa55f95ab93f400a87dda7dac91ad94`
-- SHA256: `71a5f27235827f8a1fd0e680d2acc59a176eda85986293814de3f28fb7e4e015`
+- Veličina: 2.064.750.592 bajtova (1,92 GiB)
+- MD5: `f604f335e5f175ca256e9872fcf56db2`
+
 
 Ako želite samo da koristite diya Linux, potrebno je samo preuzeti ISO.
 
@@ -235,10 +237,11 @@ Postoje dva potpuno različita načina korišćenja ovog projekta.
 Preuzme se gotov ISO:
 
 ```text
-GitHub Release v2.0
+Google Drive
+(isti fajl, nova verzija)
      |
      v
-  diya-linux-v2.0.iso
+  diya.iso
      |
      v
 USB / virtuelna mašina
@@ -384,7 +387,9 @@ Trenutni build sistem omogućava da se iz pripremljenog sistema ponovljivo napra
 
 Trenutna verzija je diya Linux v2.0, napravljena 24. novembra 2026.
 
-Gotov ISO se trenutno distribuira preko GitHub Releases.
+Gotov ISO se distribuira preko Google Drive-a. Za svako novo izdanje ažurira se verzija postojećeg fajla `diya.iso`, tako da link za preuzimanje ostaje isti.
+
+GitHub Releases služi za čuvanje root filesystem snapshot-a i njegove SHA256 kontrolne sume.
 
 GitHub služi za:
 
